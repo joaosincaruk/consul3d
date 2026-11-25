@@ -3,203 +3,370 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Trilha da Carreira</title>
+<title>Trilha da Carreira | Consulthree Jovens</title>
+<meta name="description" content="Quatro fases, oito perguntas difíceis sobre a carreira que a faculdade não ensina.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* VOICE: calmo e aspiracional, como uma travessia noturna bem iluminada
-   IDEA: a carreira como trilha que sobe por plataformas: Internato, Residência, Especialista, Consultório
-   PICTURE: cena 3D com trilha de luz, plataformas hexagonais e um cristal de 4 pontas no topo
-   COLOUR and TYPE: noite petróleo, luz azul-água, âmbar para o pilar a cuidar; Fraunces + Inter
-   LAYOUT: a cena ocupa a tela; painel de pergunta ancorado embaixo à esquerda, abaixo da cena no celular */
+/* VOICE: calmo e aspiracional, um jogo de fases sério
+   IDEA: a carreira como trilha de ECG que liga quatro placas de Petri, cada uma com um objeto da medicina
+   PICTURE: estetoscópio, coração com ECG, DNA e clínica; no topo, o coração da marca com 4 barras de resultado
+   COLOUR and TYPE: noite petróleo, luz azul-água, âmbar para o pilar a cuidar, coral só no coração; Fraunces + Inter
+   LAYOUT: cena em tela cheia, trilha de fases no topo, painel embaixo à esquerda (abaixo da cena no celular) */
 :root{color-scheme:dark;--bg:#0b1d24;--ink:#e8eef1;--soft:#9fb1ba;--card:#0f262e;--line:#24505e;--aq:#7cc4d6;--amb:#e8a33d;--cor:#f08a76;--pet:#144a5a}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
 h1,h2{font-family:Fraunces,Georgia,serif;font-weight:300;line-height:1.08;text-wrap:balance;margin:0}
 h1 em,h2 em{font-style:italic;color:var(--aq)}
 .wrapS{position:relative}
-.stage{position:relative;height:min(86vh,780px);min-height:520px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#14404e 0%,#0b1d24 60%)}
+.stage{position:relative;height:min(88vh,800px);min-height:540px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#14404e 0%,#0b1d24 62%)}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage.hov canvas{cursor:pointer}
 .brand{position:absolute;top:18px;left:max(4vw,16px);font-size:14px;color:var(--soft);z-index:2}
 .brand b{color:var(--ink);font-weight:600}
-.prog{position:absolute;top:16px;right:max(4vw,16px);z-index:2;font-size:14px;color:var(--soft);text-align:right}
-.prog .d{display:flex;gap:5px;justify-content:flex-end;margin-top:6px}.prog .d i{width:18px;height:4px;border-radius:2px;background:var(--line)}.prog .d i.f{background:var(--aq)}
-.lbl{position:absolute;z-index:1;transform:translate(-50%,-100%);font-size:13px;font-weight:600;color:var(--ink);background:rgba(11,29,36,.7);border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;pointer-events:none;transition:opacity .3s}
-.lbl.on{border-color:var(--aq);color:var(--aq)}.lbl.w{border-color:var(--amb);color:var(--amb)}
-.panel{position:absolute;z-index:3;left:max(4vw,16px);bottom:max(4vh,18px);width:min(540px,calc(100% - 32px));background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,3vw,30px);box-shadow:0 30px 60px -30px #000;transition:opacity .35s,transform .35s;max-height:calc(100% - 90px);overflow:auto}
+.phases{position:absolute;top:14px;right:max(4vw,16px);z-index:2;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:62%}
+.ph{font-size:13px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--soft);background:rgba(11,29,36,.6);transition:all .3s}
+.ph.active{border-color:var(--aq);color:var(--aq)}
+.ph.done{background:var(--aq);border-color:var(--aq);color:#0b1d24}
+.ph.done.w{background:var(--amb);border-color:var(--amb)}
+.lbl{position:absolute;z-index:1;transform:translate(-50%,-100%);font-size:13px;font-weight:600;color:var(--soft);background:rgba(11,29,36,.72);border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;pointer-events:none;transition:opacity .3s,color .3s,border-color .3s}
+.lbl.active{color:var(--aq);border-color:var(--aq)}.lbl.done{color:var(--ink);border-color:var(--aq)}.lbl.w{color:var(--amb);border-color:var(--amb)}
+.tip3{position:absolute;z-index:4;pointer-events:none;background:#0f262e;border:1px solid var(--aq);color:var(--ink);font-size:14px;padding:8px 12px;border-radius:10px;transform:translate(14px,14px);opacity:0;transition:opacity .15s;box-shadow:0 12px 30px -12px #000;white-space:nowrap}
+.tip3.on{opacity:1}.tip3 b{display:block;color:var(--aq);font-weight:600}
+.toast{position:absolute;z-index:4;left:50%;top:22%;transform:translate(-50%,0);background:rgba(15,38,46,.92);border:1px solid var(--aq);border-radius:14px;padding:14px 22px;text-align:center;opacity:0;pointer-events:none}
+.toast small{display:block;color:var(--aq);font-size:13px;font-weight:600}
+.toast span{font-family:Fraunces,serif;font-size:clamp(24px,3vw,32px);font-weight:300}
+.toast.show{animation:toast 2.2s ease forwards}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,12px) scale(.96)}12%,75%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-10px)}}
+.panel{position:absolute;z-index:3;left:max(4vw,16px);bottom:max(4vh,18px);width:min(540px,calc(100% - 32px));background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,3vw,30px);box-shadow:0 30px 60px -30px #000;transition:opacity .35s,transform .35s;max-height:calc(100% - 100px);overflow:auto}
 .panel.out{opacity:0;transform:translateY(14px);pointer-events:none}
-.kick{font-size:14px;color:var(--aq);margin:0 0 8px;font-weight:500}
+.kick{font-size:14px;color:var(--aq);margin:0 0 8px;font-weight:500;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.kick span{color:var(--soft);font-weight:400}
 .panel h1{font-size:clamp(34px,5vw,50px);margin-bottom:12px}
-.panel h2{font-size:clamp(22px,2.6vw,28px);margin-bottom:18px}
+.panel h2{font-size:clamp(21px,2.4vw,26px);margin-bottom:16px}
 .panel p{margin:0 0 14px;color:var(--soft)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
-.chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:10px 16px;font:inherit;font-size:15px;cursor:pointer;min-height:44px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:10px 16px;font:inherit;font-size:15px;cursor:pointer;min-height:44px;transition:border-color .2s,transform .2s}
+.chip:hover{border-color:var(--aq);transform:translateY(-1px)}
 .chip[aria-pressed=true]{background:var(--aq);border-color:var(--aq);color:#0b1d24}
-.btn{background:var(--aq);color:#0b1d24;border:0;border-radius:8px;padding:14px 22px;font:600 16px Inter,sans-serif;cursor:pointer;min-height:48px}
+.btn{display:inline-flex;align-items:center;justify-content:center;background:var(--aq);color:#0b1d24;border:0;border-radius:8px;padding:14px 22px;font:600 16px Inter,sans-serif;cursor:pointer;min-height:48px;text-decoration:none;transition:transform .15s,box-shadow .2s}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 24px -10px var(--aq)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#0b1d24;border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:8px;font:inherit;color:var(--ink);cursor:pointer;min-height:50px;transition:border-color .2s,background .2s}
-.opt:hover{border-color:var(--aq)}.opt b{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--aq);display:grid;place-items:center;font-size:13px;color:var(--aq)}
+.opt{position:relative;display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#0b1d24;border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:8px;font:inherit;font-size:15.5px;color:var(--ink);cursor:pointer;min-height:50px;transition:border-color .2s,background .2s,transform .2s,box-shadow .2s;overflow:hidden}
+.opt::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(124,196,214,.13) 50%,transparent 70%);transform:translateX(-100%);transition:transform .6s}
+.opt:hover{border-color:var(--aq);transform:translateX(4px);box-shadow:0 8px 22px -14px var(--aq)}
+.opt:hover::after{transform:translateX(100%)}
+.opt b{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--aq);display:grid;place-items:center;font-size:13px;color:var(--aq);transition:background .2s,color .2s}
+.opt:hover b{background:var(--aq);color:#0b1d24}
 .opt.sel{background:#143a46;border-color:var(--aq)}
 .chip:focus-visible,.btn:focus-visible,.opt:focus-visible,input:focus-visible{outline:3px solid var(--amb);outline-offset:2px}
-.score{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
-.score .n{font-family:Fraunces,serif;font-weight:300;font-size:clamp(64px,10vw,96px);line-height:.9;color:var(--aq);font-variant-numeric:tabular-nums}
-.bar{display:grid;grid-template-columns:130px 1fr 34px;gap:10px;align-items:center;margin:8px 0;font-size:15px}
+.big{font-family:Fraunces,serif;font-weight:300;font-size:clamp(56px,8vw,80px);line-height:1;color:var(--aq);font-variant-numeric:tabular-nums}
+.big small{font-size:.32em;color:var(--soft);font-family:Inter,sans-serif}
+input[type=range]{width:100%;accent-color:var(--aq);height:36px;margin:6px 0 2px}
+.ticks{display:flex;justify-content:space-between;font-size:13px;color:var(--soft);font-variant-numeric:tabular-nums;margin-bottom:16px}
+.score{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+.bar{display:grid;grid-template-columns:140px 1fr 40px;gap:10px;align-items:center;margin:8px 0;font-size:15px}
 .bar .t{height:8px;background:var(--line);border-radius:4px;overflow:hidden}.bar .t i{display:block;height:100%;background:var(--aq);transition:width 1s}
 .bar.w .t i{background:var(--amb)}.bar em{font-style:normal;text-align:right;color:var(--soft);font-variant-numeric:tabular-nums}
 .tip{border-left:3px solid var(--amb);padding:10px 14px;background:#0b1d24;border-radius:0 8px 8px 0;margin:14px 0;color:var(--ink);font-size:15px}
 label{display:block;font-size:14px;font-weight:500;margin:12px 0 5px}
-input{width:100%;font:16px Inter,sans-serif;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#0b1d24;color:var(--ink);min-height:46px}
+input[type=text],input[type=email],input[type=tel]{width:100%;font:16px Inter,sans-serif;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#0b1d24;color:var(--ink);min-height:46px;transition:border-color .2s}
+input[type=text]:hover,input[type=email]:hover,input[type=tel]:hover{border-color:var(--aq)}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 12px}
 .ck{display:flex;gap:10px;align-items:flex-start;font-weight:400;color:var(--soft)}.ck input{width:20px;min-height:20px;flex:none;margin-top:2px}
 .err{color:var(--cor);font-size:14px;margin:8px 0 0}.hide{display:none!important}
-details{font-size:14px;color:var(--soft);margin-top:12px}pre{overflow-x:auto;background:#0b1d24;padding:10px;border-radius:8px;font-size:13px}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.unl h3{font-size:16px;color:var(--aq);margin:16px 0 4px;font-weight:600}
+.unl ol{margin:0;padding-left:20px;color:var(--ink);font-size:15px}.unl li{margin-bottom:8px}
+.unl .g li{white-space:pre-line;color:var(--soft)}.unl .g li b{color:var(--ink)}
 .foot{padding:18px max(4vw,16px);font-size:14px;color:var(--soft)}
-@media(max-width:700px){.stage{height:58vh;min-height:380px}.panel{position:relative;left:auto;bottom:auto;width:auto;margin:-40px 12px 0;max-height:none}.two{grid-template-columns:minmax(0,1fr)}.bar{grid-template-columns:110px 1fr 30px}}
+@media(max-width:700px){.stage{height:58vh;min-height:400px}.panel{position:relative;left:auto;bottom:auto;width:auto;margin:-40px 12px 0;max-height:none}.two{grid-template-columns:minmax(0,1fr)}.bar{grid-template-columns:116px 1fr 36px}.phases{max-width:70%}.ph{font-size:13px;padding:4px 9px}.brand{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrapS">
-<div class="stage" id="stage">
-  <div class="brand"><b>Consulthree Jovens</b> · Trilha da Carreira</div>
-  <div class="prog" id="prog"></div>
-  <div id="labels"></div>
+  <div class="stage" id="stage">
+    <div class="brand"><b>Consulthree Jovens</b> · Trilha da Carreira</div>
+    <div class="phases" id="phases"></div>
+    <div id="labels"></div>
+    <div class="tip3" id="tip3"></div>
+    <div class="toast" id="toast"><small></small><span></span></div>
+  </div>
+  <section class="panel" id="panel" aria-live="polite"></section>
 </div>
-<section class="panel" id="panel" aria-live="polite"></section>
-</div>
-<p class="foot">Protótipo. Perguntas, textos e faixas de resultado para validar com a equipe; nada é enviado.</p>
+<p class="foot">Avaliação educativa. Questões tributárias simplificadas: confirme o seu caso com um contador.</p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 {
+const CONFIG={
+  WEBHOOK_URL:'',              // mesma URL /exec do Apps Script do diagnóstico: os leads caem na mesma planilha
+  WHATSAPP:'5511950683000',    // WhatsApp da Consulthree
+  CUSTO_FIXO:12000,CONSULTA:400,TAXAS:.15
+};
 const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const P={fin:'Finanças',mer:'Mercado e carreira',pos:'Posicionamento',ges:'Gestão'};
-const STAGES=[{n:'Internato',p:'mer'},{n:'Residência',p:'fin'},{n:'Especialista',p:'pos'},{n:'Consultório',p:'ges'}];
-const Q=[
-{p:'mer',t:'Como você está escolhendo (ou escolheu) a sua especialidade?',o:[['Pela que paga mais hoje.',1],['Pela indicação da família ou de professores.',0],['Pelo que gosto na prática, cruzado com a demanda de onde quero viver.',3],['Vou decidir quando chegar a hora.',0]]},
-{p:'mer',t:'Daqui a 5 anos, você sabe onde quer atender e para quem?',o:[['Sim: cidade, perfil de paciente e modelo de atuação.',3],['Tenho uma ideia geral.',2],['Vou para onde aparecer oportunidade.',1],['Nunca parei para pensar.',0]]},
-{p:'fin',t:'Primeiro mês de plantões como PJ: o dinheiro caiu na conta. O que você faz primeiro?',o:[['Pago as contas do mês e vejo o que sobra.',1],['Separo os impostos e começo uma reserva antes de gastar.',3],['Aplico tudo numa oportunidade que um colega indicou.',0],['Deixo parado e resolvo depois com o contador.',2]]},
-{p:'fin',t:'Um hospital oferece contratar você como PJ. Antes de aceitar, o que você compara?',o:[['Só o valor bruto do plantão.',0],['O valor líquido, depois de impostos e do custo de manter o CNPJ.',3],['Se os colegas também aceitaram.',1],['Se dá para receber como pessoa física.',1]]},
-{p:'pos',t:'Se um paciente procurar o seu nome no Google ou no Instagram hoje, ele encontra:',o:[['Nada, ou só o meu perfil pessoal.',0],['Meu nome e a especialidade, sem muito mais.',1],['Conteúdo, mas sem uma linha clara.',2],['Quem eu sou, o que eu trato e como agendar.',3]]},
-{p:'pos',t:'Como você constrói a sua rede de contatos na medicina?',o:[['Conheço quem aparece no plantão e na faculdade.',1],['Cuido de forma ativa: preceptores, outras especialidades, eventos.',3],['Só pelas redes sociais.',1],['Ainda não penso nisso.',0]]},
-{p:'ges',t:'No seu primeiro consultório, o que define se ele dá lucro?',o:[['Ter muitos pacientes.',1],['Aceitar todos os convênios.',0],['Conhecer o custo fixo, o valor médio da consulta e a taxa de faltas.',3],['Ter uma boa secretária.',1]]},
-{p:'ges',t:'Na hora de assinar contrato com uma clínica ou hospital, você:',o:[['Confio na indicação e assino.',0],['Leio por cima.',1],['Peço para alguém revisar, mas não negocio.',2],['Leio tudo e negocio repasse, prazos e exclusividade.',3]]}];
-const PLAN={fin:'organizar impostos, reserva e a diferença entre bruto e líquido',mer:'cruzar afinidade com demanda e desenhar onde quer estar em 5 anos',pos:'construir presença digital ética e uma rede de contatos ativa',ges:'entender custos, preço da consulta e como ler um contrato'};
+const PHASES=[{n:'Finanças',p:'fin',obj:'Coração no plantão'},{n:'Mercado e carreira',p:'mer',obj:'Estetoscópio'},{n:'Posicionamento',p:'pos',obj:'Seu DNA profissional'},{n:'Gestão',p:'ges',obj:'A sua clínica'}];
 const M=['Estudante','Internato','Residente','Recém-especialista'];
+const Q=[
+{id:'fin1',p:'fin',t:'Seu CNPJ de serviços médicos está no Simples Nacional. O que mais influencia a alíquota que você paga?',o:[['O número de plantões que você faz por mês.',0],['A cidade onde o CNPJ foi aberto.',1],['Se você atende por convênio ou particular.',0],['A proporção entre o seu pró-labore e o faturamento da empresa.',3]],c:'No Simples, serviço médico cai no Anexo III ou no V conforme o Fator R. Com folha e pró-labore a partir de 28% do faturamento, a alíquota inicial cai de 15,5% para 6%.'},
+{id:'fin2',p:'fin',t:'Um colega sugere abrir um MEI para receber os plantões e pagar menos imposto. O que você responde?',o:[['Funciona, desde que o faturamento fique abaixo do limite anual do MEI.',1],['Medicina não pode ser MEI: o caminho é outro tipo de empresa.',3],['Boa ideia, desde que o hospital aceite nota fiscal de MEI.',0],['Vale a pena só no primeiro ano, enquanto a renda é menor.',0]],c:'Medicina é profissão regulamentada e não pode ser MEI, seja qual for o faturamento. O caminho costuma ser uma empresa no Simples ou no Lucro Presumido, com contador.'},
+{id:'mer1',p:'mer',t:'Você gosta igualmente de duas especialidades. Qual dado de mercado deveria pesar mais na escolha?',o:[['A remuneração média dos especialistas no país.',1],['O número de vagas de residência e a nota de corte.',1],['Quantos especialistas já atendem na região onde você quer viver, comparado à demanda de lá.',3],['O quanto os médicos da área crescem nas redes sociais.',0]],c:'A média nacional esconde a realidade local. O que decide a sua agenda é a concorrência e a demanda na região onde você vai atender.'},
+{id:'mer2',p:'mer',t:'Recém-especialista, você tem três propostas. Qual tende a construir mais carreira em 5 anos?',o:[['Ambulatório da sua especialidade, pagando menos, numa clínica com fluxo de pacientes e rede de indicação.',3],['Plantões com o maior valor por hora, num hospital sem relação com a sua especialidade.',1],['Vínculo estável num hospital público, fora da especialidade.',1],['Dividir a semana entre as três para não fechar nenhuma porta.',1]],c:'Valor por hora alto fora da especialidade paga as contas, mas não constrói nome, rede nem pacientes próprios.'},
+{id:'pos1',p:'pos',t:'Seu Instagram tem 8 mil seguidores, mas a agenda não enche. Qual é a causa mais provável?',o:[['Ainda são poucos seguidores: a agenda enche lá pelos 30 mil.',0],['Falta frequência: o ideal é postar todos os dias.',1],['Quem segue você não é quem pode marcar consulta: outra cidade, estudantes, colegas.',3],['Falta investir em anúncios para impulsionar os posts.',1]],c:'Seguidor não é paciente. Se quem acompanha você mora longe ou é colega, o perfil cresce e a agenda não.'},
+{id:'pos2',p:'pos',t:'Ao comparar três especialistas no Google, o que costuma pesar mais para o paciente escolher?',o:[['Avaliações recentes, foto profissional e informação clara de onde e como agendar.',3],['Currículo completo, com títulos, mestrado e congressos em destaque.',1],['O número de seguidores no Instagram.',0],['O preço mais baixo da consulta.',1]],c:'Na hora de escolher, o paciente olha prova social recente e facilidade para agendar. Títulos ajudam, mas raramente decidem sozinhos.'},
+{id:'cons',p:'ges',slider:1,t:'Custo fixo do consultório: R$ 12 mil por mês. Consulta: R$ 400, e 15% de cada uma vai para impostos e taxas. Quantas consultas por mês você precisa só para cobrir o custo fixo?',c:'Com 15% de impostos e taxas, cada consulta deixa R$ 340. R$ 12.000 ÷ R$ 340 = 35,3: são 36 consultas só para empatar o custo fixo. Quem esquece os impostos responde 30.'},
+{id:'ges2',p:'ges',t:'Uma clínica oferece 60% de repasse, pagamento em 60 dias e exclusividade na cidade. O que mais pesa na sua carreira a longo prazo?',o:[['O percentual de 60%.',1],['A exclusividade na cidade.',3],['O prazo de 60 dias para receber.',1],['Nada disso: são condições padrão do mercado.',0]],c:'Percentual e prazo se renegociam. A exclusividade pode impedir você de abrir o próprio consultório ou atender em outro lugar por anos.'}];
+const BREAK=Math.ceil(CONFIG.CUSTO_FIXO/(CONFIG.CONSULTA*(1-CONFIG.TAXAS)));
+const consPts=v=>v===BREAK?3:Math.abs(v-BREAK)===1?2:v===CONFIG.CUSTO_FIXO/CONFIG.CONSULTA?1:0;
+const DIAG={
+ fin:{d:'O dinheiro entra, mas a estrutura por trás dele ainda não está montada. É aqui que o jovem médico mais perde sem perceber: imposto mal planejado e CNPJ no formato errado.',rx:['Simular com um contador o Simples com e sem Fator R','Separar imposto e reserva no dia em que o dinheiro cai','Comparar toda proposta pelo valor líquido, nunca pelo bruto']},
+ mer:{d:'As escolhas de carreira estão sendo feitas com dados que não respondem à pergunta certa. Especialidade e propostas precisam ser lidas pelo mercado onde você vai atuar.',rx:['Mapear especialistas e demanda na cidade onde você quer atender','Priorizar propostas que constroem pacientes e indicação na especialidade','Escrever onde quer estar em 5 anos e checar cada proposta contra isso']},
+ pos:{d:'A presença digital pode até crescer, mas não está virando consulta. Falta falar com o paciente certo e facilitar o agendamento.',rx:['Revisar quem segue você: cidade, perfil, se pode virar paciente','Completar o perfil do Google com fotos, endereço e agendamento','Produzir conteúdo para o seu público dentro da Res. CFM 2.336/2023']},
+ ges:{d:'Os números do consultório ainda não estão na sua mão. Sem ponto de equilíbrio e sem ler o que cada contrato amarra, a decisão fica no feeling.',rx:['Calcular o ponto de equilíbrio já com impostos e taxas','Ler cláusulas de exclusividade e prazo antes de assinar','Acompanhar consultas, faltas e valor médio todo mês']}};
+const STAMP={estavel:'Apto',atencao:'Observação',critico:'Risco'};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let mom=null,k=0,pts={fin:0,mer:0,pos:0,ges:0},res=null;
+const qs=new URLSearchParams(location.search),utm={};
+['utm_source','utm_medium','utm_campaign','utm_term','utm_content','utm_id','fbclid','ref'].forEach(k=>{const v=qs.get(k);if(v)utm[k]=v});
+window.dataLayer=window.dataLayer||[];const track=(event,data={})=>window.dataLayer.push({event,...data});
+let mom=null,k=0,ans={},revealed=false,cons=20,pts={fin:0,mer:0,pos:0,ges:0},res=null,phaseState=['locked','locked','locked','locked'];
+
+/* ---------- HUD ---------- */
+function hud(){$('phases').innerHTML=PHASES.map((f,i)=>{const st=phaseState[i],w=revealed&&st==='done'&&pts[f.p]<4?' w':'';return `<span class="ph ${st}${w}">${i+1}. ${f.n}</span>`}).join('')}
+hud();
+function toast(a,b){const t=$('toast');t.querySelector('small').textContent=a;t.querySelector('span').textContent=b;t.classList.remove('show');void t.offsetWidth;t.classList.add('show')}
 
 /* ---------- cena 3D ---------- */
-const gl=!!window.THREE;let api={focus(){},light(){},summit(){},labels(){}};
+const gl=!!window.THREE;let api={focus(){},state(){},summit(){},reveal(){},boost(){}};
 if(gl){
   const T=THREE,V=T.Vector3,stage=$('stage');
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));stage.prepend(renderer.domElement);
-  const scene=new T.Scene();scene.fog=new T.Fog(0x0b1d24,14,46);
-  const cam=new T.PerspectiveCamera(48,1,.1,200);
-  scene.add(new T.HemisphereLight(0x9fdcec,0x0b1d24,.75));
-  const sun=new T.DirectionalLight(0xffffff,.7);sun.position.set(6,12,8);scene.add(sun);
-  const grid=new T.GridHelper(90,90,0x1d6a80,0x12343f);grid.position.y=-1.4;scene.add(grid);
+  const scene=new T.Scene();scene.fog=new T.Fog(0x0b1d24,14,48);
+  const cam=new T.PerspectiveCamera(46,1,.1,200);
+  scene.add(new T.HemisphereLight(0xbfe6f0,0x0b1d24,.8));
+  const sun=new T.DirectionalLight(0xffffff,.8);sun.position.set(5,12,9);scene.add(sun);
+  const rim=new T.DirectionalLight(0x7cc4d6,.5);rim.position.set(-8,4,-6);scene.add(rim);
+  const STD=(c,o={})=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.35,metalness:.15},o));
+
+  /* trilha em forma de ECG */
   const pts3=[new V(0,0,9),new V(-4,1.1,3),new V(3,2.3,-3),new V(-3,3.5,-9),new V(3,4.7,-15),new V(0,6.6,-21.5)];
   const curve=new T.CatmullRomCurve3(pts3);
-  const tube=new T.Mesh(new T.TubeGeometry(curve,200,.035,6,false),new T.MeshBasicMaterial({color:0x24505e}));scene.add(tube);
-  const dotG=new T.SphereGeometry(.07,8,8),dim=new T.MeshBasicMaterial({color:0x2b6a7d}),lit=new T.MeshBasicMaterial({color:0x7cc4d6});
-  const dots=[];for(let i=0;i<150;i++){const t=i/149,m=new T.Mesh(dotG,dim);m.position.copy(curve.getPoint(t)).add(new V(0,.08,0));m.userData.t=t;scene.add(m);dots.push(m)}
-  const plats=[];
-  STAGES.forEach((s,i)=>{
-    const p=curve.getPoint((i+1)/5),g=new T.Group();g.position.copy(p);
-    const hex=new T.Mesh(new T.CylinderGeometry(1.35,1.55,.3,6),new T.MeshStandardMaterial({color:0x144a5a,roughness:.55,metalness:.2,flatShading:true}));hex.position.y=-.22;g.add(hex);
-    const edge=new T.LineSegments(new T.EdgesGeometry(hex.geometry),new T.LineBasicMaterial({color:0x7cc4d6,transparent:true,opacity:.6}));edge.position.copy(hex.position);g.add(edge);
-    const orbM=new T.MeshStandardMaterial({color:0x1d6a80,emissive:0x0b2a33,roughness:.25,metalness:.1});
-    const orb=new T.Mesh(new T.IcosahedronGeometry(.36,1),orbM);orb.position.y=1.15;g.add(orb);
-    const ring=new T.Mesh(new T.TorusGeometry(.62,.025,8,48),new T.MeshBasicMaterial({color:0x7cc4d6,transparent:true,opacity:.5}));ring.position.y=1.15;ring.rotation.x=Math.PI/2.4;g.add(ring);
-    const pl=new T.PointLight(0x7cc4d6,0,6);pl.position.y=1.4;g.add(pl);
-    scene.add(g);plats.push({g,orb,orbM,ring,pl,top:p.clone().add(new V(0,2,0))});
+  const ecgPts=[],N=600;
+  for(let i=0;i<=N;i++){const t=i/N,p=curve.getPoint(t),u=(t*30)%1;
+    const spike=u>.46&&u<.5?(u-.46)*20:u>=.5&&u<.54?(.54-u)*20-0.25:u>.62&&u<.7?Math.sin((u-.62)/.08*Math.PI)*.15:0;
+    ecgPts.push(p.x,p.y+.06+spike*.55,p.z)}
+  const ecgGeo=new T.BufferGeometry();ecgGeo.setAttribute('position',new T.Float32BufferAttribute(ecgPts,3));
+  const ecgDim=new T.Line(ecgGeo,new T.LineBasicMaterial({color:0x24505e}));scene.add(ecgDim);
+  const ecgLit=new T.Line(ecgGeo,new T.LineBasicMaterial({color:0x7cc4d6}));ecgLit.geometry.setDrawRange(0,0);scene.add(ecgLit);
+  const pulse=new T.Mesh(new T.SphereGeometry(.09,12,12),new T.MeshBasicMaterial({color:0xe8a33d}));scene.add(pulse);
+
+  /* formas médicas */
+  const plus=(a,b)=>{const s=new T.Shape();[[-a,b],[a,b],[a,a],[b,a],[b,-a],[a,-a],[a,-b],[-a,-b],[-a,-a],[-b,-a],[-b,a],[-a,a]].forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y));s.closePath();return s};
+  const crossGeo=new T.ExtrudeGeometry(plus(.12,.36),{depth:.12,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:2});crossGeo.center();
+  const heartShape=(()=>{const h=new T.Shape();h.moveTo(5,5);h.bezierCurveTo(5,5,4,0,0,0);h.bezierCurveTo(-6,0,-6,7,-6,7);h.bezierCurveTo(-6,11,-3,15.4,5,19);h.bezierCurveTo(12,15.4,16,11,16,7);h.bezierCurveTo(16,7,16,0,10,0);h.bezierCurveTo(7,0,5,5,5,5);return h})();
+  const heartGeo=s=>{const g=new T.ExtrudeGeometry(heartShape,{depth:4,bevelEnabled:true,bevelThickness:1.4,bevelSize:1.1,bevelSegments:4,curveSegments:28});g.center();g.scale(s,s,s);g.rotateZ(Math.PI);return g};
+  const capsuleGeo=(()=>{const r=.09,h=.16,p=[];for(let i=0;i<=8;i++){const a=-Math.PI/2+i/8*Math.PI/2;p.push(new T.Vector2(Math.cos(a)*r,-h/2+Math.sin(a)*r))}for(let i=0;i<=8;i++){const a=i/8*Math.PI/2;p.push(new T.Vector2(Math.cos(a)*r,h/2+Math.sin(a)*r))}return new T.LatheGeometry(p,16)})();
+
+  function stethoscope(){const g=new T.Group(),mt=STD(0x7cc4d6,{emissive:0x0b2a33}),metal=STD(0xd9eaef,{metalness:.9,roughness:.22});
+    const tube=(arr,r)=>new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(arr.map(a=>new V(...a))),48,r,10,false),mt);
+    g.add(tube([[-.42,1.05,0],[-.4,.75,.06],[-.22,.35,.06],[0,.08,0]],.035));
+    g.add(tube([[.42,1.05,0],[.4,.75,.06],[.22,.35,.06],[0,.08,0]],.035));
+    g.add(tube([[0,.08,0],[.06,-.25,.12],[.38,-.48,.14],[.46,-.78,0],[.26,-.98,-.04]],.042));
+    [-.42,.42].forEach(x=>{const e=new T.Mesh(new T.SphereGeometry(.07,16,16),metal);e.position.set(x,1.08,0);g.add(e)});
+    const head=new T.Mesh(new T.CylinderGeometry(.27,.27,.1,40),metal);head.rotation.x=Math.PI/2;head.position.set(.2,-1.08,0);g.add(head);
+    const ring=new T.Mesh(new T.TorusGeometry(.27,.03,10,40),STD(0x144a5a));ring.position.set(.2,-1.08,.05);g.add(ring);
+    g.scale.setScalar(.78);return {g,mats:[mt,metal]}}
+  function heartECG(){const g=new T.Group(),m=STD(0xe0605a,{emissive:0x3a1210,roughness:.3});
+    const h=new T.Mesh(heartGeo(.05),m);g.add(h);
+    const ring=[];for(let i=0;i<=220;i++){const a=i/220*Math.PI*2,u=(i%55)/55,s=u>.45&&u<.5?(u-.45)*7:u>=.5&&u<.55?(.55-u)*7-.12:0;ring.push(Math.cos(a)*(.95+s),Math.sin(a)*(.95+s),0)}
+    const rg=new T.BufferGeometry();rg.setAttribute('position',new T.Float32BufferAttribute(ring,3));
+    const line=new T.Line(rg,new T.LineBasicMaterial({color:0x7cc4d6}));g.add(line);g.userData.spinChild=line;
+    return {g,mats:[m]}}
+  function dna(){const g=new T.Group(),a=STD(0x7cc4d6,{emissive:0x0b2a33}),b=STD(0xd9eaef),r=STD(0x1d6a80);
+    const sg=new T.SphereGeometry(.075,14,14),cg=new T.CylinderGeometry(.02,.02,.9,8);
+    for(let i=0;i<22;i++){const t=i/21,y=-.95+1.9*t,an=t*Math.PI*3.2;
+      const s1=new T.Mesh(sg,a);s1.position.set(Math.cos(an)*.45,y,Math.sin(an)*.45);g.add(s1);
+      const s2=new T.Mesh(sg,b);s2.position.set(-Math.cos(an)*.45,y,-Math.sin(an)*.45);g.add(s2);
+      const c=new T.Mesh(cg,r);c.position.set(0,y,0);c.rotation.set(0,-an,Math.PI/2);g.add(c)}
+    return {g,mats:[a,b,r]}}
+  function clinic(){const g=new T.Group(),wall=STD(0xd9eaef),roof=STD(0x144a5a),door=STD(0x1d6a80),win=STD(0xf5c77e,{emissive:0xe8a33d,emissiveIntensity:.7}),cr=STD(0x7cc4d6,{emissive:0x1d6a80,emissiveIntensity:.8});
+    const body=new T.Mesh(new T.BoxGeometry(1.3,.85,.85),wall);body.position.y=-.35;g.add(body);
+    const top=new T.Mesh(new T.BoxGeometry(1.45,.09,1),roof);top.position.y=.12;g.add(top);
+    const d=new T.Mesh(new T.BoxGeometry(.26,.45,.04),door);d.position.set(0,-.55,.44);g.add(d);
+    [[-.42,-.22],[.42,-.22],[-.42,-.55],[.42,-.55]].forEach(([x,y])=>{const w=new T.Mesh(new T.BoxGeometry(.24,.18,.03),win);w.position.set(x,y,.44);g.add(w)});
+    const pole=new T.Mesh(new T.CylinderGeometry(.025,.025,.3,8),roof);pole.position.y=.3;g.add(pole);
+    const c=new T.Mesh(crossGeo,cr);c.position.y=.75;c.scale.setScalar(1.15);g.add(c);g.userData.spinChild=c;
+    return {g,mats:[wall,roof,door,win,cr]}}
+
+  /* placas de Petri */
+  const builders=[heartECG,stethoscope,dna,clinic],phases=[];
+  PHASES.forEach((f,i)=>{
+    const p=curve.getPoint((i+1)/5),root=new T.Group();root.position.copy(p);scene.add(root);
+    const dish=new T.Mesh(new T.CylinderGeometry(1.55,1.55,.16,56,1,true),new T.MeshStandardMaterial({color:0x7cc4d6,transparent:true,opacity:.18,roughness:.05,side:T.DoubleSide}));dish.position.y=-.18;root.add(dish);
+    const base=new T.Mesh(new T.CircleGeometry(1.55,56),new T.MeshStandardMaterial({color:0x0f2f39,transparent:true,opacity:.85,roughness:.6}));base.rotation.x=-Math.PI/2;base.position.y=-.26;root.add(base);
+    const rimM=new T.MeshBasicMaterial({color:0x2b6a7d});const r=new T.Mesh(new T.TorusGeometry(1.55,.035,8,72),rimM);r.rotation.x=Math.PI/2;r.position.y=-.1;root.add(r);
+    const glow=new T.PointLight(0x7cc4d6,0,7);glow.position.y=1.6;root.add(glow);
+    const o=builders[i]();o.g.position.y=1.25;root.add(o.g);
+    o.mats.forEach(m=>{m.userData.c=m.color.clone();m.userData.e=m.emissive.clone();m.userData.ei=m.emissiveIntensity});
+    phases.push({root,obj:o.g,mats:o.mats,rimM,glow,scale:.5,target:.5,hover:0,spin:.35,top:p.clone().add(new V(0,2.75,0)),i});
   });
-  const pg=new T.BufferGeometry(),arr=new Float32Array(1200);for(let i=0;i<1200;i+=3){arr[i]=(Math.random()-.5)*40;arr[i+1]=Math.random()*14-1;arr[i+2]=-Math.random()*44+12}
-  pg.setAttribute('position',new T.BufferAttribute(arr,3));const dust=new T.Points(pg,new T.PointsMaterial({color:0x7cc4d6,size:.05,transparent:true,opacity:.55}));scene.add(dust);
-  const summit=pts3[5].clone(),crystal=new T.Group();crystal.position.copy(summit).add(new V(0,1.2,0));scene.add(crystal);
-  const core=new T.Mesh(new T.IcosahedronGeometry(.42,0),new T.MeshStandardMaterial({color:0xd9eaef,emissive:0x1d6a80,emissiveIntensity:.6,flatShading:true,roughness:.2}));crystal.add(core);
-  const DIRS=[new V(1,.25,0),new V(0,.25,1),new V(-1,.25,0),new V(0,.25,-1)].map(d=>d.normalize());
-  const arms=Object.keys(P).map((key,i)=>{const m=new T.Mesh(new T.ConeGeometry(.3,1,6),new T.MeshStandardMaterial({color:0x7cc4d6,emissive:0x144a5a,transparent:true,opacity:.9,roughness:.15,metalness:.25,flatShading:true}));
-    m.quaternion.setFromUnitVectors(new V(0,1,0),DIRS[i]);m.scale.set(1,.01,1);crystal.add(m);return {m,key,dir:DIRS[i],len:.01,target:.01}});
-  const sl=new T.PointLight(0xe8a33d,0,10);sl.position.copy(summit).add(new V(0,3,2));scene.add(sl);
+  const GREY=new T.Color(0x34515b);
+  function paint(ph,st,ratio){
+    const lit=st!=='locked';
+    ph.mats.forEach(m=>{m.color.copy(lit?m.userData.c:GREY);m.emissive.copy(lit?m.userData.e:new T.Color(0));m.emissiveIntensity=lit?m.userData.ei:0});
+    ph.target=st==='locked'?.5:1;
+    if(st==='active'){ph.rimM.color.set(0x7cc4d6);ph.glow.color.set(0x7cc4d6);ph.glow.intensity=1}
+    if(st==='done'){const c=new T.Color(ratio==null?0x7cc4d6:ratio>=.67?0x7cc4d6:ratio>=.34?0xe8a33d:0xf08a76);ph.rimM.color.copy(c);ph.glow.color.copy(c);ph.glow.intensity=1.3}
+  }
+  phases.forEach(ph=>paint(ph,'locked'));
+
+  /* cápsulas e cruzes flutuando */
+  const FL=[];const mkInst=(geo,n,colors)=>{const m=new T.InstancedMesh(geo,new T.MeshStandardMaterial({roughness:.4}),n);
+    for(let i=0;i<n;i++){m.setColorAt(i,new T.Color(colors[i%colors.length]));FL.push({m,i,p:new V((Math.random()-.5)*34,Math.random()*12-1,-Math.random()*40+12),r:new V(Math.random()*6,Math.random()*6,0),s:.6+Math.random()*.9,v:.2+Math.random()*.5})}
+    scene.add(m);return m};
+  const caps=mkInst(capsuleGeo,46,[0x7cc4d6,0xd9eaef,0xe8a33d,0x1d6a80]),crs=mkInst(crossGeo,22,[0x7cc4d6,0x2b6a7d]);
+  const dummy=new T.Object3D();
+
+  /* topo: coração da marca com 4 barras */
+  const summit=pts3[5].clone(),top=new T.Group();top.position.copy(summit).add(new V(0,.2,0));scene.add(top);top.visible=false;
+  const bigHeart=new T.Mesh(heartGeo(.085),STD(0x7cc4d6,{emissive:0x144a5a,emissiveIntensity:.8,roughness:.2,metalness:.3}));bigHeart.position.set(-1,1.5,0);top.add(bigHeart);
+  const bars=Object.keys(P).map((key,i)=>{const m=new T.Mesh(new T.BoxGeometry(.34,1,.34),STD(0x7cc4d6,{emissive:0x144a5a,emissiveIntensity:.5}));m.position.set(.35+i*.7,0,0);m.scale.y=.01;top.add(m);return {m,key,h:.01,target:.01}});
+  const tl=new T.PointLight(0xe8a33d,0,10);tl.position.copy(summit).add(new V(0,3,3));scene.add(tl);
+
+  /* câmera, hover e paralaxe */
   const camPos=new V(9,9.5,14),look=new V(0,3,-6),lookT=look.clone(),camT=camPos.clone();cam.position.copy(camPos);
-  let progT=0,progTarget=0,showSummit=false;
-  api.focus=i=>{const p=curve.getPoint((i+1)/5);camT.copy(p).add(new V(1.6,2.5,5.6));lookT.copy(p).add(new V(0,.7,-1));progTarget=(i+1)/5-.03};
-  api.light=(i,r)=>{const pl=plats[i],c=new T.Color(r>=.67?0x7cc4d6:r>=.34?0xe8a33d:0xf08a76);pl.orbM.color.copy(c);pl.orbM.emissive.copy(c).multiplyScalar(.55);pl.ring.material.color.copy(c);pl.pl.color.copy(c);pl.pl.intensity=1.4;pl.done=true};
-  api.summit=(by,weak)=>{showSummit=true;progTarget=1;camT.copy(summit).add(new V(0,2.6,7.2));lookT.copy(summit).add(new V(0,1.2,0));sl.intensity=1.2;
-    arms.forEach(a=>{a.target=.7+by[a.key]/6*2.1;if(a.key===weak){a.m.material.color.set(0xe8a33d);a.m.material.emissive.set(0x5a3a10)}})};
+  let litTarget=0,litNow=0,showTop=false,mx=0,my=0,boost=0,hovered=-1;
+  api.focus=i=>{const p=curve.getPoint((i+1)/5);camT.copy(p).add(new V(1.8,2.6,5.8));lookT.copy(p).add(new V(0,1,-1));litTarget=(i+1)/5-.04};
+  api.state=(i,st,ratio)=>paint(phases[i],st,ratio);
+  api.boost=b=>{boost=b};
+  api.summit=()=>{showTop=true;top.visible=true;litTarget=1;camT.copy(summit).add(new V(.3,2.2,7.8));lookT.copy(summit).add(new V(.3,1.2,0));tl.intensity=1.2;bars.forEach(b=>{b.target=.15})};
+  api.reveal=(by,weak)=>{bars.forEach(b=>{b.target=.15+by[b.key]/6*1.9;if(b.key===weak){b.m.material.color.set(0xe8a33d);b.m.material.emissive.set(0x5a3a10)}});
+    phases.forEach((ph,i)=>paint(ph,'done',by[PHASES[i].p]/6))};
+  const ray=new T.Raycaster(),mouse=new T.Vector2(-9,-9),tip=$('tip3');
+  stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();mouse.x=(e.clientX-r.left)/r.width*2-1;mouse.y=-(e.clientY-r.top)/r.height*2+1;mx=mouse.x;my=mouse.y;tip.style.left=e.clientX-r.left+'px';tip.style.top=e.clientY-r.top+'px'});
+  stage.addEventListener('pointerleave',()=>{mouse.set(-9,-9);mx=my=0});
   const labels=$('labels');
-  const L=[...STAGES.map((s,i)=>({el:null,txt:s.n,pos:()=>plats[i].top,cls:()=>plats[i].done?'on':''})),
-           ...arms.map(a=>({el:null,txt:P[a.key],pos:()=>crystal.localToWorld(a.dir.clone().multiplyScalar(a.len+.5)),cls:()=>a.m.material.color.getHex()===0xe8a33d?'w':'on',summit:1}))];
+  const L=[...phases.map((ph,i)=>({txt:`${i+1}. ${PHASES[i].n}`,pos:()=>ph.top,cls:()=>{const s=phaseState[i];return revealed&&s==='done'&&pts[PHASES[i].p]<4?'done w':s}})),
+    ...bars.map((b,i)=>({txt:P[b.key],pos:()=>top.localToWorld(b.m.position.clone().setY(b.h+.3+(i%2)*.42)),cls:()=>b.m.material.color.getHex()===0xe8a33d?'w':'done',top:1}))];
   L.forEach(l=>{l.el=document.createElement('div');l.el.className='lbl';l.el.textContent=l.txt;labels.appendChild(l.el)});
   const size=()=>{const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()};
   const ro=new ResizeObserver(size);ro.observe(stage);size();
-  const clock=new T.Clock();
+  const clock=new T.Clock(),total=ecgPts.length/3;
   (function loop(){
     const t=clock.getElapsedTime(),f=reduce?1:.045;
-    cam.position.lerp(camT,f);look.lerp(lookT,f*1.1);cam.lookAt(look);
-    progT+=(progTarget-progT)*(reduce?1:.04);dots.forEach(d=>d.material=d.userData.t<=progT?lit:dim);
-    plats.forEach((p,i)=>{p.ring.rotation.z=t*.6+i;p.orb.rotation.y=t*.5;p.orb.position.y=1.15+(reduce?0:Math.sin(t*1.3+i)*.06)});
-    if(!reduce)dust.rotation.y=t*.01;
-    crystal.rotation.y=reduce?.6:t*.35;
-    arms.forEach(a=>{a.len+=(a.target-a.len)*(reduce?1:.035);a.m.scale.set(1,a.len,1);a.m.position.copy(a.dir).multiplyScalar(a.len/2+.25)});
+    const want=camT.clone().add(new V(mx*.6,my*.35,0));cam.position.lerp(want,f);look.lerp(lookT,f*1.1);cam.lookAt(look);
+    litNow+=(litTarget-litNow)*(reduce?1:.035);const n=Math.floor(litNow*total);ecgLit.geometry.setDrawRange(0,n);
+    const pi=Math.max(0,n-1);pulse.position.set(ecgPts[pi*3],ecgPts[pi*3+1],ecgPts[pi*3+2]);
+    ray.setFromCamera(mouse,cam);let hv=-1;
+    const hits=ray.intersectObjects(phases.map(p=>p.root),true);if(hits.length){let o=hits[0].object;while(o&&!phases.some(p=>p.root===o))o=o.parent;hv=phases.findIndex(p=>p.root===o)}
+    const hitTop=showTop&&ray.intersectObject(top,true).length>0;
+    if(hv!==hovered||hitTop!==tip._top){hovered=hv;tip._top=hitTop;stage.classList.toggle('hov',hv>=0||hitTop);
+      if(hv>=0){const s=phaseState[hv],f=PHASES[hv];tip.innerHTML=`<b>Fase ${hv+1} · ${f.n}</b>${f.obj} · ${s==='locked'?'bloqueada':s==='active'?'fase atual':revealed?`${pts[f.p]} de 6 pontos`:'concluída'}`;tip.classList.add('on')}
+      else if(hitTop){tip.innerHTML=`<b>Seu resultado</b>${revealed?`${res.total} de 24 pontos`:'liberado após o cadastro'}`;tip.classList.add('on')}
+      else tip.classList.remove('on')}
+    phases.forEach((ph,i)=>{const cur=phaseState[i]==='active';ph.hover+=(((i===hovered)?1:0)-ph.hover)*.15;
+      const sc=ph.target*(1+ph.hover*.14+(cur?boost*.06:0));ph.scale+=(sc-ph.scale)*(reduce?1:.08);ph.obj.scale.setScalar(ph.scale);
+      const sp=(ph.target<1?.15:.45)+ph.hover*1.2+(cur?boost*1.6:0);ph.spin+=(sp-ph.spin)*.08;
+      if(!reduce){ph.obj.rotation.y+=ph.spin*.016;ph.obj.position.y=1.25+Math.sin(t*1.2+i)*.07;if(ph.obj.userData.spinChild)ph.obj.userData.spinChild.rotation.z-=ph.spin*.02}
+      ph.mats.forEach(m=>{if(m.userData.e&&phaseState[i]!=='locked')m.emissiveIntensity=m.userData.ei+ph.hover*.6+(cur?boost*.4:0)})});
+    if(!reduce){FL.forEach(o=>{const y=o.p.y+Math.sin(t*o.v+o.i)*.4;dummy.position.set(o.p.x,y,o.p.z);dummy.rotation.set(o.r.x+t*o.v*.4,o.r.y+t*o.v*.3,0);dummy.scale.setScalar(o.s);dummy.updateMatrix();o.m.setMatrixAt(o.i,dummy.matrix)});caps.instanceMatrix.needsUpdate=crs.instanceMatrix.needsUpdate=true}
+    else if(!loop.once){loop.once=1;FL.forEach(o=>{dummy.position.copy(o.p);dummy.rotation.set(o.r.x,o.r.y,0);dummy.scale.setScalar(o.s);dummy.updateMatrix();o.m.setMatrixAt(o.i,dummy.matrix)});caps.instanceMatrix.needsUpdate=crs.instanceMatrix.needsUpdate=true}
+    bigHeart.rotation.y=reduce?.4:Math.sin(t*.6)*.5;const beat=1+(reduce?0:Math.max(0,Math.sin(t*5))**8*.08)+(hitTop?.05:0);bigHeart.scale.setScalar(beat);
+    bars.forEach(b=>{b.h+=(b.target-b.h)*(reduce?1:.04);b.m.scale.y=b.h;b.m.position.y=b.h/2});
     renderer.render(scene,cam);
     const w=stage.clientWidth,h=stage.clientHeight;
-    L.forEach(l=>{const v=l.pos().project(cam),vis=v.z<1&&(!l.summit||showSummit);l.el.style.opacity=vis?1:0;
-      l.el.style.left=(v.x+1)/2*w+'px';l.el.style.top=(1-v.y)/2*h+'px';l.el.className='lbl '+l.cls()});
+    L.forEach(l=>{const v=l.pos().project(cam),vis=v.z<1&&(!l.top||showTop);l.el.style.opacity=vis?1:0;l.el.style.left=(v.x+1)/2*w+'px';l.el.style.top=(1-v.y)/2*h+'px';l.el.className='lbl '+l.cls()});
     requestAnimationFrame(loop);
   })();
 }
 
 /* ---------- painel ---------- */
 const panel=$('panel');
-const swap=html=>new Promise(r=>{panel.classList.add('out');setTimeout(()=>{panel.innerHTML=html;panel.classList.remove('out');r()},reduce?0:350)});
-const prog=()=>{$('prog').innerHTML=k<Q.length?`${STAGES[Math.floor(k/2)].n} · pergunta ${k+1} de ${Q.length}<div class="d">${Q.map((_,i)=>`<i class="${i<k?'f':''}"></i>`).join('')}</div>`:'Topo da trilha'};
+const swap=html=>new Promise(r=>{panel.classList.add('out');setTimeout(()=>{panel.innerHTML=html;panel.scrollTop=0;panel.classList.remove('out');r()},reduce?0:340)});
+panel.addEventListener('mouseover',e=>{if(e.target.closest('.opt,input[type=range]'))api.boost(1)});
+panel.addEventListener('mouseout',e=>{if(e.target.closest('.opt,input[type=range]'))api.boost(0)});
 panel.innerHTML=`<p class="kick">Consulthree Jovens</p><h1>Até onde a sua carreira <em>já subiu?</em></h1>
-<p>Quatro plataformas, oito perguntas, uns 3 minutos. No topo, um cristal mostra a força de cada pilar da sua carreira: finanças, mercado, posicionamento e gestão.</p>
+<p>Quatro fases, uma por tema: finanças, mercado e carreira, posicionamento e gestão. Oito perguntas, uns 4 minutos. Aviso: é difícil. A resposta que parece certa nem sempre é a mais forte.</p>
 <p style="color:var(--ink);font-weight:500;margin-bottom:10px">Em que momento você está?</p>
 <div class="chips" id="moment">${M.map(m=>`<button class="chip" aria-pressed="false" data-m="${m}">${m}</button>`).join('')}</div>
-<button class="btn" id="start" disabled>Começar a subida</button>${gl?'':'<p class="err">A cena 3D não carregou neste navegador; o diagnóstico funciona mesmo assim.</p>'}`;
+<button class="btn" id="start" disabled>Começar a fase 1</button>${gl?'':'<p class="err">A cena 3D não carregou neste navegador; o diagnóstico funciona mesmo assim.</p>'}`;
 $('moment').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;mom=b.dataset.m;[...$('moment').children].forEach(c=>c.setAttribute('aria-pressed',c===b));$('start').disabled=false});
-$('start').onclick=()=>{api.focus(0);ask()};
+$('start').onclick=()=>{track('quiz_start',{momento:mom,formato:'trilha-3d'});enterPhase(0)};
 
+function enterPhase(i){phaseState[i]='active';api.state(i,'active');api.focus(i);hud();toast(`Fase ${i+1} de 4`,PHASES[i].n);setTimeout(ask,reduce?0:900)}
 async function ask(){
-  prog();const q=Q[k],s=STAGES[Math.floor(k/2)];
-  await swap(`<p class="kick">${s.n} · ${P[q.p]}</p><h2>${q.t}</h2>${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><b>${'ABCD'[i]}</b><span>${o[0]}</span></button>`).join('')}`);
+  const q=Q[k],f=Math.floor(k/2),kick=`<p class="kick">Fase ${f+1} · ${PHASES[f].n}<span>Pergunta ${k+1} de 8</span></p>`;
+  if(q.slider){
+    await swap(`${kick}<h2>${q.t}</h2><div class="big" id="cv">${cons}<small> consultas</small></div>
+      <input type="range" id="rg" min="10" max="60" step="1" value="${cons}" aria-label="Consultas por mês">
+      <div class="ticks"><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span></div>
+      <button class="btn" id="ok" style="width:100%">Confirmar</button>`);
+    $('rg').oninput=e=>{cons=+e.target.value;$('cv').innerHTML=`${cons}<small> consultas</small>`};
+    $('ok').onclick=()=>{api.boost(0);answer(consPts(cons))};
+    return;
+  }
+  await swap(`${kick}<h2>${q.t}</h2>${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><b>${'ABCD'[i]}</b><span>${o[0]}</span></button>`).join('')}`);
   panel.querySelector('.opt').focus({preventScroll:true});
-  panel.onclick=e=>{const b=e.target.closest('.opt');if(!b)return;panel.onclick=null;b.classList.add('sel');answer(+b.dataset.i)};
+  panel.onclick=e=>{const b=e.target.closest('.opt');if(!b)return;panel.onclick=null;b.classList.add('sel');api.boost(0);ans[q.id]=+b.dataset.i;answer(q.o[+b.dataset.i][1])};
 }
-function answer(i){
-  const q=Q[k];pts[q.p]+=q.o[i][1];k++;
-  setTimeout(()=>{
-    if(k%2===0){const si=k/2-1;api.light(si,pts[STAGES[si].p]/6);if(k<Q.length)api.focus(si+1)}
-    if(k<Q.length)setTimeout(ask,k%2===0&&!reduce?700:0);else finish();
-  },reduce?0:260);
+function answer(v){
+  const q=Q[k];pts[q.p]+=v;track('quiz_answer',{pergunta:k+1});k++;
+  if(k%2===0){const i=k/2-1;phaseState[i]='done';api.state(i,'done');hud();
+    if(k<Q.length)setTimeout(()=>enterPhase(i+1),reduce?0:500);else setTimeout(finish,reduce?0:500)}
+  else setTimeout(ask,reduce?0:240);
 }
 async function finish(){
-  const tot=Object.values(pts).reduce((a,b)=>a+b,0),pct=Math.round(tot/24*100),weak=Object.keys(pts).sort((a,b)=>pts[a]-pts[b])[0];
-  const prof=tot>=17?'Rota de alta performance':tot>=10?'Rota em construção':'Rota no piloto automático';
-  res={tot,pct,weak,prof};prog();api.summit(pts,weak);
-  await swap(`<p class="kick">Topo da trilha</p><div class="score"><span class="n">${pct}%</span><h2 style="margin:0">${prof}</h2></div>
-  ${Object.keys(P).map(key=>`<div class="bar ${key===weak?'w':''}"><span>${P[key]}</span><div class="t"><i style="width:0" data-w="${pts[key]/6*100}"></i></div><em>${pts[key]}/6</em></div>`).join('')}
-  <div class="tip"><b>Ponta a fortalecer: ${P[weak]}.</b> O relatório completo mostra como ${PLAN[weak]}.</div>
-  <form id="fm" novalidate>
-    <div class="two"><div><label for="f-nome">Nome</label><input id="f-nome" autocomplete="name"></div><div><label for="f-wa">WhatsApp com DDD</label><input id="f-wa" inputmode="tel" autocomplete="tel"></div></div>
-    <div class="two"><div><label for="f-mail">E-mail</label><input id="f-mail" type="email" autocomplete="email"></div><div><label for="f-inst">Faculdade ou instituição</label><input id="f-inst"></div></div>
-    <label class="ck"><input type="checkbox" id="f-ok"> Aceito receber o relatório e conteúdos da Consulthree por e-mail e WhatsApp.</label>
-    <p class="err hide" id="err" role="alert">Preencha nome, WhatsApp, e-mail e o aceite.</p>
-    <button class="btn" style="width:100%;margin-top:14px">Receber meu relatório completo</button>
-  </form>`);
+  let best=0;Q.forEach(q=>{const v=q.slider?consPts(cons):q.o[ans[q.id]][1];if(v===3)best++});
+  const total=Object.values(pts).reduce((a,b)=>a+b,0),weak=Object.keys(pts).sort((a,b)=>pts[a]-pts[b])[0];
+  const status=total>=19?'estavel':total>=11?'atencao':'critico';
+  const gab=Q.map((q,n)=>{if(q.slider)return `${n+1}. Ponto de equilíbrio do consultório\nVocê marcou: ${cons} consultas. ${cons===BREAK?'Resposta mais forte.':`Mais forte: ${BREAK} consultas.`}\n${q.c}`;
+    const mine=ans[q.id],bi=q.o.findIndex(o=>o[1]===3);return `${n+1}. ${q.t}\nVocê marcou: ${q.o[mine][0]} ${mine===bi?'Resposta mais forte.':`Mais forte: ${q.o[bi][0]}`}\n${q.c}`});
+  res={total,best,weak,status,gab};api.summit();toast('Trilha concluída','Seu laudo está pronto');
+  track('quiz_complete',{formato:'trilha-3d'});
+  await swap(`<p class="kick">Trilha concluída<span>${esc(mom)}</span></p>
+  <h2>Seu laudo está <em>pronto</em></h2>
+  <p>Nota de 0 a 24, resultado por tema, o pilar que mais pede atenção, prescrição e o gabarito comentado das 8 perguntas. Preencha para liberar.</p>
+  <div id="fm">
+    <div class="two"><div><label for="f-nome">Nome</label><input type="text" id="f-nome" autocomplete="name"></div><div><label for="f-wa">WhatsApp com DDD</label><input type="tel" id="f-wa" inputmode="tel" autocomplete="tel" placeholder="(11) 90000-0000"></div></div>
+    <div class="two"><div><label for="f-mail">E-mail</label><input type="email" id="f-mail" autocomplete="email"></div><div><label for="f-inst">Faculdade ou instituição</label><input type="text" id="f-inst"></div></div>
+    <label class="ck"><input type="checkbox" id="f-ok"> Aceito receber o laudo e o contato da Consulthree por e-mail e WhatsApp.</label>
+    <input type="text" id="f-site" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <p class="err hide" id="err" role="alert"></p>
+    <button class="btn" id="send" style="width:100%;margin-top:14px">Liberar meu resultado</button>
+  </div>`);
+  $('f-wa').addEventListener('input',e=>{const d=e.target.value.replace(/\D/g,'').slice(0,11);let o=d;if(d.length>2)o=`(${d.slice(0,2)}) ${d.slice(2)}`;if(d.length>6)o=`(${d.slice(0,2)}) ${d.slice(2,d.length-4)}-${d.slice(-4)}`;e.target.value=o});
+  $('send').onclick=send;
+}
+async function send(){
+  const v=id=>$(id).value.trim(),btn=$('send'),err=$('err'),dg=DIAG[res.weak];
+  const digits=v('f-wa').replace(/\D/g,'');
+  const bad=v('f-nome').length<2?'Escreva seu nome.':!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('f-mail'))?'Confira o e-mail.':(digits.length<10||digits.length>11)?'Informe o WhatsApp com DDD.':!$('f-ok').checked?'Marque o aceite para liberar o resultado.':'';
+  err.textContent=bad;err.classList.toggle('hide',!bad);if(bad)return;
+  btn.disabled=true;btn.textContent='Liberando…';
+  const payload={produto:'consulthree-jovens',versao:'trilha-3d-v2',nome:v('f-nome'),email:v('f-mail'),whatsapp:'55'+digits,instituicao:v('f-inst'),momento:mom,
+    pontos:res.total,respostas_fortes:res.best,pilares:pts,pilar_fragil:res.weak,status:res.status,status_label:STAMP[res.status],
+    diagnostico:`Pilar mais frágil: ${P[res.weak]}. ${dg.d}`,prescricao:dg.rx,gabarito:res.gab,respostas:{...ans,ponto_equilibrio:cons},website:v('f-site'),
+    consentimento:true,pagina:location.origin+location.pathname,enviado_em:new Date().toISOString(),...utm};
+  try{
+    if(CONFIG.WEBHOOK_URL){const r=await fetch(CONFIG.WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+      if(!r.ok)throw new Error('HTTP '+r.status);const out=await r.json().catch(()=>({ok:true}));if(out.ok===false)throw new Error(out.erro||'falha')}
+    else{await new Promise(r=>setTimeout(r,800));console.info('[protótipo] lead capturado:',payload)}
+  }catch(e){console.error(e);btn.disabled=false;btn.textContent='Liberar meu resultado';err.textContent='O cadastro não foi enviado. Confira sua conexão e tente de novo.';err.classList.remove('hide');return}
+  track('generate_lead',{status:res.status,pontos:res.total,formato:'trilha-3d'});
+  revealed=true;hud();api.reveal(pts,res.weak);toast('Resultado liberado',STAMP[res.status]);
+  const msg=`Olá! Fiz a Trilha da Carreira da Consulthree Jovens e o laudo deu "${STAMP[res.status]}" (${res.total} de 24 pontos). Quero entender o meu resultado.`;
+  await swap(`<p class="kick">Seu resultado<span>${esc(mom)}</span></p>
+  <div class="score"><span class="big">${res.total}<small> de 24</small></span><h2 style="margin:0">${STAMP[res.status]}</h2></div>
+  <p style="margin:0 0 6px">Resposta mais forte em <b style="color:var(--ink)">${res.best} de 8</b> perguntas. A cópia do laudo vai para <b style="color:var(--ink)">${esc(payload.email)}</b>.</p>
+  ${Object.keys(P).map(key=>`<div class="bar ${key===res.weak?'w':''}"><span>${P[key]}</span><div class="t"><i style="width:0" data-w="${pts[key]/6*100}"></i></div><em>${pts[key]}/6</em></div>`).join('')}
+  <div class="unl"><div class="tip"><b>Pilar a cuidar: ${P[res.weak]}.</b> ${esc(dg.d)}</div>
+    <h3>Prescrição</h3><ol>${dg.rx.map(t=>`<li>${esc(t)}</li>`).join('')}</ol>
+    <h3>Gabarito comentado</h3><ol class="g">${res.gab.map(t=>{const [a,...b]=t.split('\n');return `<li><b>${esc(a.replace(/^\d+\.\s/,''))}</b>\n${esc(b.join('\n'))}</li>`}).join('')}</ol>
+    <a class="btn" style="width:100%;margin-top:12px" href="https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Conversar sobre o resultado no WhatsApp</a></div>`);
   setTimeout(()=>panel.querySelectorAll('.bar .t i').forEach(i=>i.style.width=i.dataset.w+'%'),80);
-  $('fm').addEventListener('submit',e=>{
-    e.preventDefault();const v=id=>$(id).value.trim();
-    const ok=v('f-nome')&&v('f-wa').replace(/\D/g,'').length>=10&&/\S+@\S+\.\S+/.test(v('f-mail'))&&$('f-ok').checked;
-    $('err').classList.toggle('hide',!!ok);if(!ok)return;
-    const lead={origem:'trilha-3d',momento:mom,nome:v('f-nome'),whatsapp:v('f-wa'),email:v('f-mail'),instituicao:v('f-inst'),percentual:res.pct,pilares:pts,pilar_fraco:res.weak,perfil:res.prof,ref:location.hash.slice(1)||null};
-    $('fm').outerHTML=`<p style="color:var(--ink)">Pronto! O relatório com o plano para <b>${P[res.weak]}</b> vai para o seu WhatsApp, e a equipe da Consulthree Jovens entra em contato.</p><details><summary>Dados que iriam para o CRM (protótipo)</summary><pre id="json"></pre></details>`;
-    $('json').textContent=JSON.stringify(lead,null,2);
-  });
 }
 }
 </script>
