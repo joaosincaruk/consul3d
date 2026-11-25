@@ -26,7 +26,7 @@ h1 em,h2 em{font-style:italic;color:var(--aq)}
 .brand b{color:var(--ink);font-weight:600}
 .phases{position:absolute;top:14px;right:max(4vw,16px);z-index:2;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:62%}
 .ph{font-size:13px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--soft);background:rgba(11,29,36,.6);transition:all .3s}
-.ph.active{border-color:var(--aq);color:var(--aq)}
+.ph i,.ph em{font-style:normal}.ph.active{border-color:var(--aq);color:var(--aq)}
 .ph.done{background:var(--aq);border-color:var(--aq);color:#0b1d24}
 .ph.done.w{background:var(--amb);border-color:var(--amb)}
 .lbl{position:absolute;z-index:1;transform:translate(-50%,-100%);font-size:13px;font-weight:600;color:var(--soft);background:rgba(11,29,36,.72);border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;pointer-events:none;transition:opacity .3s,color .3s,border-color .3s}
@@ -80,7 +80,7 @@ input[type=text]:hover,input[type=email]:hover,input[type=tel]:hover{border-colo
 .unl ol{margin:0;padding-left:20px;color:var(--ink);font-size:15px}.unl li{margin-bottom:8px}
 .unl .g li{white-space:pre-line;color:var(--soft)}.unl .g li b{color:var(--ink)}
 .foot{padding:18px max(4vw,16px);font-size:14px;color:var(--soft)}
-@media(max-width:700px){.stage{height:58vh;min-height:400px}.panel{position:relative;left:auto;bottom:auto;width:auto;margin:-40px 12px 0;max-height:none}.two{grid-template-columns:minmax(0,1fr)}.bar{grid-template-columns:116px 1fr 36px}.phases{max-width:70%}.ph{font-size:13px;padding:4px 9px}.brand{display:none}}
+@media(max-width:700px){.stage{height:42vh;min-height:300px}.panel{position:relative;left:auto;bottom:auto;width:auto;margin:-28px 10px 0;max-height:none;padding:20px 18px}.panel h1{font-size:32px}.panel h2{font-size:21px}.ph:not(.active) em{display:none}.toast{top:30%;padding:10px 16px;white-space:nowrap}.lbl{font-size:12.5px}.tip3{white-space:normal;max-width:200px}.two{grid-template-columns:minmax(0,1fr)}.bar{grid-template-columns:116px 1fr 36px}.phases{max-width:70%}.ph{font-size:13px;padding:4px 9px}.brand{display:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -131,10 +131,10 @@ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const qs=new URLSearchParams(location.search),utm={};
 ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','utm_id','fbclid','ref'].forEach(k=>{const v=qs.get(k);if(v)utm[k]=v});
 window.dataLayer=window.dataLayer||[];const track=(event,data={})=>window.dataLayer.push({event,...data});
-let mom=null,k=0,ans={},revealed=false,cons=20,pts={fin:0,mer:0,pos:0,ges:0},res=null,phaseState=['locked','locked','locked','locked'];
+let mom=null,k=0,ans={},revealed=false,started=false,cons=20,pts={fin:0,mer:0,pos:0,ges:0},res=null,phaseState=['locked','locked','locked','locked'];
 
 /* ---------- HUD ---------- */
-function hud(){$('phases').innerHTML=PHASES.map((f,i)=>{const st=phaseState[i],w=revealed&&st==='done'&&pts[f.p]<4?' w':'';return `<span class="ph ${st}${w}">${i+1}. ${f.n}</span>`}).join('')}
+function hud(){$('phases').innerHTML=PHASES.map((f,i)=>{const st=phaseState[i],w=revealed&&st==='done'&&pts[f.p]<4?' w':'';return `<span class="ph ${st}${w}"><i>${i+1}.</i> <em>${f.n}</em></span>`}).join('')}
 hud();
 function toast(a,b){const t=$('toast');t.querySelector('small').textContent=a;t.querySelector('span').textContent=b;t.classList.remove('show');void t.offsetWidth;t.classList.add('show')}
 
@@ -143,7 +143,7 @@ const gl=!!window.THREE;let api={focus(){},state(){},summit(){},reveal(){},boost
 if(gl){
   const T=THREE,V=T.Vector3,stage=$('stage');
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));stage.prepend(renderer.domElement);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.5:2));stage.prepend(renderer.domElement);
   const scene=new T.Scene();scene.fog=new T.Fog(0x0b1d24,14,48);
   const cam=new T.PerspectiveCamera(46,1,.1,200);
   scene.add(new T.HemisphereLight(0xbfe6f0,0x0b1d24,.8));
@@ -246,11 +246,15 @@ if(gl){
   api.reveal=(by,weak)=>{bars.forEach(b=>{b.target=.15+by[b.key]/6*1.9;if(b.key===weak){b.m.material.color.set(0xe8a33d);b.m.material.emissive.set(0x5a3a10)}});
     phases.forEach((ph,i)=>paint(ph,'done',by[PHASES[i].p]/6))};
   const ray=new T.Raycaster(),mouse=new T.Vector2(-9,-9),tip=$('tip3');
-  stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();mouse.x=(e.clientX-r.left)/r.width*2-1;mouse.y=-(e.clientY-r.top)/r.height*2+1;mx=mouse.x;my=mouse.y;tip.style.left=e.clientX-r.left+'px';tip.style.top=e.clientY-r.top+'px'});
+  let tt=0;const pointer=e=>{const r=stage.getBoundingClientRect();mouse.x=(e.clientX-r.left)/r.width*2-1;mouse.y=-(e.clientY-r.top)/r.height*2+1;
+    const tx=Math.min(e.clientX-r.left,r.width-190);tip.style.left=tx+'px';tip.style.top=e.clientY-r.top+'px';
+    if(e.pointerType==='mouse'){mx=mouse.x;my=mouse.y}else{clearTimeout(tt);tt=setTimeout(()=>mouse.set(-9,-9),2500)}};
+  stage.addEventListener('pointermove',pointer);stage.addEventListener('pointerdown',pointer);
   stage.addEventListener('pointerleave',()=>{mouse.set(-9,-9);mx=my=0});
   const labels=$('labels');
   const L=[...phases.map((ph,i)=>({txt:`${i+1}. ${PHASES[i].n}`,pos:()=>ph.top,cls:()=>{const s=phaseState[i];return revealed&&s==='done'&&pts[PHASES[i].p]<4?'done w':s}})),
-    ...bars.map((b,i)=>({txt:P[b.key],pos:()=>top.localToWorld(b.m.position.clone().setY(b.h+.3+(i%2)*.42)),cls:()=>b.m.material.color.getHex()===0xe8a33d?'w':'done',top:1}))];
+  ];
+  L.forEach((l,i)=>{l.show=()=>phaseState.every(x=>x==='locked')||phaseState[i]==='active'||hovered===i});
   L.forEach(l=>{l.el=document.createElement('div');l.el.className='lbl';l.el.textContent=l.txt;labels.appendChild(l.el)});
   const size=()=>{const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()};
   const ro=new ResizeObserver(size);ro.observe(stage);size();
@@ -262,9 +266,11 @@ if(gl){
     const pi=Math.max(0,n-1);pulse.position.set(ecgPts[pi*3],ecgPts[pi*3+1],ecgPts[pi*3+2]);
     ray.setFromCamera(mouse,cam);let hv=-1;
     const hits=ray.intersectObjects(phases.map(p=>p.root),true);if(hits.length){let o=hits[0].object;while(o&&!phases.some(p=>p.root===o))o=o.parent;hv=phases.findIndex(p=>p.root===o)}
-    const hitTop=showTop&&ray.intersectObject(top,true).length>0;
-    if(hv!==hovered||hitTop!==tip._top){hovered=hv;tip._top=hitTop;stage.classList.toggle('hov',hv>=0||hitTop);
+    const th=showTop?ray.intersectObject(top,true)[0]:null,hb=th?bars.find(b=>b.m===th.object):null,hitTop=!!th;
+    const key=hv>=0?'p'+hv:hb?'b'+hb.key:hitTop?'h':'';
+    if(key!==tip._k||revealed!==tip._r){hovered=hv;tip._k=key;tip._r=revealed;stage.classList.toggle('hov',!!key);
       if(hv>=0){const s=phaseState[hv],f=PHASES[hv];tip.innerHTML=`<b>Fase ${hv+1} · ${f.n}</b>${f.obj} · ${s==='locked'?'bloqueada':s==='active'?'fase atual':revealed?`${pts[f.p]} de 6 pontos`:'concluída'}`;tip.classList.add('on')}
+      else if(hb){tip.innerHTML=`<b>${P[hb.key]}</b>${revealed?`${pts[hb.key]} de 6 pontos`:'liberado após o cadastro'}`;tip.classList.add('on')}
       else if(hitTop){tip.innerHTML=`<b>Seu resultado</b>${revealed?`${res.total} de 24 pontos`:'liberado após o cadastro'}`;tip.classList.add('on')}
       else tip.classList.remove('on')}
     phases.forEach((ph,i)=>{const cur=phaseState[i]==='active';ph.hover+=(((i===hovered)?1:0)-ph.hover)*.15;
@@ -278,14 +284,16 @@ if(gl){
     bars.forEach(b=>{b.h+=(b.target-b.h)*(reduce?1:.04);b.m.scale.y=b.h;b.m.position.y=b.h/2});
     renderer.render(scene,cam);
     const w=stage.clientWidth,h=stage.clientHeight;
-    L.forEach(l=>{const v=l.pos().project(cam),vis=v.z<1&&(!l.top||showTop);l.el.style.opacity=vis?1:0;l.el.style.left=(v.x+1)/2*w+'px';l.el.style.top=(1-v.y)/2*h+'px';l.el.className='lbl '+l.cls()});
+    L.forEach(l=>{const v=l.pos().project(cam),vis=v.z<1&&Math.abs(v.x)<.9&&v.y<.88&&v.y>-.6&&l.show();l.el.style.opacity=vis?1:0;l.el.style.left=(v.x+1)/2*w+'px';l.el.style.top=(1-v.y)/2*h+'px';l.el.className='lbl '+l.cls()});
     requestAnimationFrame(loop);
   })();
 }
 
 /* ---------- painel ---------- */
 const panel=$('panel');
-const swap=html=>new Promise(r=>{panel.classList.add('out');setTimeout(()=>{panel.innerHTML=html;panel.scrollTop=0;panel.classList.remove('out');r()},reduce?0:340)});
+const mob=()=>innerWidth<=700;
+const toPanel=()=>{if(!mob())return;const y=panel.getBoundingClientRect().top+scrollY-Math.round(innerHeight*.22);if(Math.abs(scrollY-y)>40)scrollTo({top:Math.max(0,y),behavior:reduce?'auto':'smooth'})};
+const swap=html=>new Promise(r=>{panel.classList.add('out');setTimeout(()=>{panel.innerHTML=html;panel.scrollTop=0;panel.classList.remove('out');if(started)toPanel();r()},reduce?0:340)});
 panel.addEventListener('mouseover',e=>{if(e.target.closest('.opt,input[type=range]'))api.boost(1)});
 panel.addEventListener('mouseout',e=>{if(e.target.closest('.opt,input[type=range]'))api.boost(0)});
 panel.innerHTML=`<p class="kick">Consulthree Jovens</p><h1>Até onde a sua carreira <em>já subiu?</em></h1>
@@ -294,7 +302,7 @@ panel.innerHTML=`<p class="kick">Consulthree Jovens</p><h1>Até onde a sua carre
 <div class="chips" id="moment">${M.map(m=>`<button class="chip" aria-pressed="false" data-m="${m}">${m}</button>`).join('')}</div>
 <button class="btn" id="start" disabled>Começar a fase 1</button>${gl?'':'<p class="err">A cena 3D não carregou neste navegador; o diagnóstico funciona mesmo assim.</p>'}`;
 $('moment').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;mom=b.dataset.m;[...$('moment').children].forEach(c=>c.setAttribute('aria-pressed',c===b));$('start').disabled=false});
-$('start').onclick=()=>{track('quiz_start',{momento:mom,formato:'trilha-3d'});enterPhase(0)};
+$('start').onclick=()=>{started=true;track('quiz_start',{momento:mom,formato:'trilha-3d'});enterPhase(0)};
 
 function enterPhase(i){phaseState[i]='active';api.state(i,'active');api.focus(i);hud();toast(`Fase ${i+1} de 4`,PHASES[i].n);setTimeout(ask,reduce?0:900)}
 async function ask(){
